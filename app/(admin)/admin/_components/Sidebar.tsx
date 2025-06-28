@@ -34,6 +34,9 @@ export default function Sidebar() {
                 <ProgressBarLink href="/admin/product-management" className={linkClass("/admin/product-management")}>
                     <Package size={20} /> Products
                 </ProgressBarLink>
+                <ProgressBarLink href="/admin/category-management" className={linkClass("/admin/category-management")}>
+                    <Package size={20} /> Categories
+                </ProgressBarLink>
                 <ProgressBarLink href="/admin/order-management" className={linkClass("/admin/order-management")}>
                     <ShoppingCart size={20} /> Orders
                 </ProgressBarLink>

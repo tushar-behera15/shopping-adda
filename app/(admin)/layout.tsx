@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 import Sidebar from "./admin/_components/Sidebar";
 import { ProgressBar } from "@/components/ProgressLink";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
     title: "Admin",
@@ -14,9 +15,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <body>
                 <div className="flex min-h-screen bg-gray-100">
                     <ProgressBar className="bg-orange-500 h-1">
-                    <Sidebar/>
-                    <main className="flex-1 p-6">{children}</main>
+                        <Sidebar />
+                        <main className="flex-1 p-6">{children}</main>
                     </ProgressBar>
+                    <Toaster
+                        position="top-center"
+                    />
                 </div>
             </body>
         </html>

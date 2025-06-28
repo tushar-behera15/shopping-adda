@@ -2,10 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { Plus, X } from "lucide-react";
+import { SkeletonRow } from "@/components/ui/skeleton-row";
+import { toast } from "sonner";
 
 export default function UserTable() {
     const [showModal, setShowModal] = useState(false);
+    const [editModal, setEditModal] = useState(false);
     const [users, setUsers] = useState<any[]>([]);
+    const [selectedUser, setSelectedUser] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+    const [createLoading, setCreateLoading] = useState(false);
+    const [updateLoading, setUpdateLoading] = useState(false);
+
     const [form, setForm] = useState(
         {
             name: "",
@@ -17,6 +25,7 @@ export default function UserTable() {
 
     const fetchUsers = async () => {
         try {
+            setLoading(true);
             const res = await fetch("/api/all-users", {
                 method: "GET"
             })
@@ -30,8 +39,9 @@ export default function UserTable() {
             }
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
         }
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -56,6 +66,7 @@ export default function UserTable() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            setCreateLoading(true);
             const res = await fetch('/api/all-users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -66,7 +77,7 @@ export default function UserTable() {
 
 
             if (res.ok) {
-                alert("User created");
+                toast.success("User created successfully");
                 setForm({
                     name: "",
                     email: "",
@@ -82,6 +93,7 @@ export default function UserTable() {
             console.error("Error during form submit:", err);
             alert("Failed to submit. See console for details.");
         }
+        setCreateLoading(false);
     };
 
     const handleDelete = async (id: string) => {
@@ -93,7 +105,7 @@ export default function UserTable() {
             const data = await res.json();
             console.log(res);
             if (res.ok) {
-                alert("Delete Successfully");
+                toast.success("User delete succesfully");
                 fetchUsers();
             }
             else {
@@ -105,6 +117,36 @@ export default function UserTable() {
             alert("Failed to delete. See console for details.");
         }
     }
+
+    const handleEdit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedUser) return;
+        setUpdateLoading(true);
+        try {
+            const res = await fetch(`/api/update-user/`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: selectedUser.id, ...form
+                }),
+            });
+            const result = await res.json();
+            if (res.ok) {
+                toast.success("User updated successfully");
+                setEditModal(false);
+                fetchUsers();
+            } else {
+                alert(result.error || "Something went wrong");
+            }
+        } catch (err) {
+            console.error("Error during update:", err);
+            alert("Failed to update. See console for details.");
+        }
+        setUpdateLoading(false);
+    };
+
 
     return (
         <>
@@ -136,23 +178,33 @@ export default function UserTable() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {users.map((user, index) => (
-                                <tr key={user.id} className="hover:bg-gray-50 transition">
-                                    <td className="px-6 py-3">{index + 1}</td>
-                                    <td className="px-6 py-3">{user.name}</td>
-                                    <td className="px-6 py-3">{user.email}</td>
-                                    <td className="px-6 py-3">
-                                        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">
-                                            {user.role}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-3">{new Date(user.created_at).toLocaleString()}</td>
-                                    <td className="px-6 py-3 space-x-2">
-                                        <button className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer">Edit</button>
-                                        <button className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer" onClick={() => handleDelete(user.id)}>Delete</button>
-                                    </td>
-                                </tr>
-                            ))}
+                            {
+                                loading ? Array(5).fill(0).map((_, idx) => <SkeletonRow key={idx} />) :
+
+                                    users.map((user, index) => (
+                                        <tr key={user.id} className="hover:bg-gray-50 transition">
+                                            <td className="px-6 py-3">{index + 1}</td>
+                                            <td className="px-6 py-3">{user.name}</td>
+                                            <td className="px-6 py-3">{user.email}</td>
+                                            <td className="px-6 py-3">
+                                                <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">
+                                                    {user.role}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-3">{new Date(user.created_at).toLocaleString()}</td>
+                                            <td className="px-6 py-3 space-x-2">
+                                                <button
+                                                    className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer"
+                                                    onClick={() => {
+                                                        setSelectedUser(user);
+                                                        setForm({ name: user.name, email: user.email, role: user.role, password: '' });
+                                                        setEditModal(true)
+                                                    }
+                                                    }>Edit</button>
+                                                <button className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer" onClick={() => handleDelete(user.id)}>Delete</button>
+                                            </td>
+                                        </tr>
+                                    ))}
                         </tbody>
                     </table>
                 </div>
@@ -218,9 +270,73 @@ export default function UserTable() {
                                 </select>
                             </div>
                             <div className="pt-2">
-                                <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md">
-                                    Create
+                                <button
+                                    type="submit"
+                                    disabled={createLoading}
+                                    className={`w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md ${createLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                    {createLoading ? 'Creating...' : 'Create'}
                                 </button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+            {editModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                    <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg relative">
+                        <button
+                            onClick={() => setEditModal(false)}
+                            className="absolute top-3 right-3 text-gray-500 hover:text-black"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <h2 className="text-xl font-semibold mb-4">Update a User/Admin</h2>
+
+                        <form className="space-y-4" onSubmit={handleEdit}>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Name</label>
+                                <input type="text"
+                                    name="name"
+                                    className="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    placeholder="Enter your name"
+                                    required
+                                    value={form.name}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Email</label>
+                                <input type="email"
+                                    name="email"
+                                    className="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    placeholder="Enter your email"
+                                    required
+                                    value={form.email}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Role</label>
+                                <select
+                                    className="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    name="role"
+                                    value={form.role}
+                                    onChange={handleChange}
+                                >
+                                    <option value="User" defaultChecked>User</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                            <div className="pt-2">
+                                <button
+                                    type="submit"
+                                    disabled={updateLoading}
+                                    className={`w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md ${updateLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                    {updateLoading ? 'Updating...' : 'Update'}
+                                </button>
+
                             </div>
                         </form>
                     </div>

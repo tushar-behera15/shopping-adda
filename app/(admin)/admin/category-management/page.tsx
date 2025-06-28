@@ -1,8 +1,8 @@
-import { Suspense } from "react"
-import UserTable from "./_components/UserTable"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
+import { Suspense } from "react";
+import CategoryTable from "./_components/CategoryTable";
 
-const UserManagement = () => {
+export default function CategoryDashboard() {
     return (
         <Suspense
             fallback={
@@ -24,9 +24,9 @@ const UserManagement = () => {
                 </div>
             }
         >
-            <UserTable />
+            <CategoryTable />
         </Suspense>
-    )
-}
 
-export default UserManagement
+    );
+
+}
