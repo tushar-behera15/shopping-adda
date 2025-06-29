@@ -1,14 +1,15 @@
 'use client'
 import { SkeletonRow } from "@/components/ui/skeleton-row";
 import { Plus, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function CategoryTable() {
     const [showModal, setShowModal] = useState(false);
     const [editModal, setEditModal] = useState(false);
     const [createLoading, setCreateLoading] = useState(false);
-    // const [updateLoading, setUpdateLoading] = useState(false);
+    const [updateLoading, setUpdateLoading] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [category, setCategory] = useState<any[]>([]);
     const [form, setForm] = useState(
@@ -83,7 +84,62 @@ export default function CategoryTable() {
         setCreateLoading(false);
     }
 
+    const handleDelete=async(id:string)=>{
+        try{
+            const res=await fetch(`/api/delete-category/${id}`,
+                {
+                    method:'DELETE'
+                }
+            );
+            const data=await res.json();
+            if(res.ok)
+            {
+                toast.success("Delete category succesfully");
+                fetchCategory();
+            }
+            else{
+                alert(data.error ||"Something went wrong");
+            }
+        }
+        catch(err)
+        {
+            console.error(err);
+        }
+    }
 
+    const handleEdit=async(e:React.FormEvent)=>{
+        e.preventDefault();
+        if(!selectedCategory) return;
+        try{
+            setUpdateLoading(true);
+            const res=await fetch('/api/update-category',{
+                method:'POST',
+                headers:{
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify(
+                    {
+                        id:selectedCategory.id,...form
+                    }
+                )
+            });
+            const data=await res.json();
+            if(res.ok)
+            {
+                toast.success("Update category succesfully");
+                setEditModal(false);
+                fetchCategory();
+            }
+            else{
+                alert(data.error||"Something went wrong");
+            }
+        }
+        catch(err)
+        {
+            console.error(err);
+        }
+        setUpdateLoading(false);
+    }
 
 
     return (
@@ -124,10 +180,21 @@ export default function CategoryTable() {
                                         <td className="px-6 py-3 space-x-2">
                                             <button
                                                 className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer"
-                                                onClick={() => setEditModal(true)}
+                                                onClick={()=>
+                                                {
+                                                    setSelectedCategory(categories);
+                                                    setForm({name:categories.name});
+                                                    setEditModal(true);
+                                                }
+                                                    
+                                                }
+
                                             >
                                                 Edit</button>
-                                            <button className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer">Delete</button>
+                                            <button 
+                                            className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer"
+                                            onClick={()=>handleDelete(categories.id)}
+                                            >Delete</button>
                                         </td>
                                     </tr>
                                 ))}
@@ -188,7 +255,7 @@ export default function CategoryTable() {
 
                         <h2 className="text-xl font-semibold mb-4">Update a category</h2>
 
-                        <form className="space-y-4">
+                        <form className="space-y-4" onSubmit={handleEdit}>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Name</label>
                                 <input type="text"
@@ -196,16 +263,17 @@ export default function CategoryTable() {
                                     className="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                                     placeholder="Enter a category name"
                                     required
-
+                                    value={form.name}
+                                    onChange={handleChange}
                                 />
                             </div>
 
                             <div className="pt-2">
                                 <button
                                     type="submit"
-                                    // disabled={updateLoading}
-                                    className={`w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md`}>
-                                    Update
+                                    disabled={updateLoading}
+                                    className={`w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md ${updateLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                    {updateLoading ? 'Updating...' : 'Update'}
                                 </button>
 
                             </div>
