@@ -74,13 +74,13 @@ export default function ProductTable() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        setCreateLoading(true);
         let imageUrl = form.image;
 
         if (imageFile) {
             imageUrl = await handleImageUpload(imageFile);
         }
         try {
-            setCreateLoading(true);
 
             const res = await fetch('/api/all-product', {
                 method: 'POST',
@@ -125,8 +125,8 @@ export default function ProductTable() {
 
     const handleEdit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedProduct) return;
         setUpdateLoading(true);
+        if (!selectedProduct) return;
         try {
             const res = await fetch(`/api/update-product`, {
                 method: 'POST',
@@ -200,7 +200,7 @@ export default function ProductTable() {
                         </tr>
                     </thead>
                     <tbody>
-                        {loading ? Array(5).fill(0).map((_, idx) => <SkeletonRow key={idx} />) :
+                        {loading ? Array(5).fill(0).map((_, idx) => <SkeletonRow key={idx} colCount={9} />) :
                             products.map((product, i) => (
                                 <tr key={product.id} className="border-t">
                                     <td className="px-4 py-2">{i + 1}</td>
@@ -209,7 +209,12 @@ export default function ProductTable() {
                                     </td>
                                     <td className="px-4 py-2">{product.title}</td>
                                     <td className="px-4 py-2">₹{product.price}</td>
-                                    <td className="px-4 py-2">{product.stock}</td>
+                                    <td className="px-4 py-2">
+                                        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">
+
+                                            {product.stock}
+                                        </span>
+                                    </td>
                                     <td className="px-4 py-2">{product.category_name}</td>
                                     <td className="px-4 py-2">{new Date(product.created_at).toLocaleString()}</td>
                                     <td className="px-4 py-2">{new Date(product.updated_at).toLocaleString()}</td>
@@ -355,7 +360,8 @@ function ProductModal({ form, categories, loading, onChange, onSubmit, onClose, 
                     </select>
 
                     <textarea name="description" placeholder="Description" value={form.description} onChange={onChange} required className="border p-2 rounded col-span-full"></textarea>
-                    <button type="submit" disabled={loading} className="bg-green-600 text-white rounded p-2 col-span-full">
+                    <button type="submit" disabled={loading}
+                        className={`bg-green-600 text-white rounded p-2 col-span-full ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         {loading ? 'Saving...' : 'Save Product'}
                     </button>
                 </form>

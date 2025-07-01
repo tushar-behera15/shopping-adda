@@ -25,7 +25,6 @@ export default function CategoryTable() {
                 method: 'GET',
             })
             const data = await res.json();
-            console.log("Fetched category data:", data);
             if (Array.isArray(data)) {
                 setCategory(data);
                 setShowModal(false);
@@ -171,7 +170,7 @@ export default function CategoryTable() {
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {
-                                loading ? Array(5).fill(0).map((_, idx) => <SkeletonRow key={idx} />) :
+                                loading ? Array(5).fill(0).map((_, idx) => <SkeletonRow key={idx} colCount={4}/>) :
                                 category.map((categories, index) => (
                                     <tr key={categories.id} className="hover:bg-gray-50 transition">
                                         <td className="px-6 py-3">{index + 1}</td>

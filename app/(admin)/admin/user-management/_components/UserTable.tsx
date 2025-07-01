@@ -179,7 +179,7 @@ export default function UserTable() {
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {
-                                loading ? Array(5).fill(0).map((_, idx) => <SkeletonRow key={idx} />) :
+                                loading ? Array(5).fill(0).map((_, idx) => <SkeletonRow key={idx} colCount={6} />) :
 
                                     users.map((user, index) => (
                                         <tr key={user.id} className="hover:bg-gray-50 transition">
