@@ -29,8 +29,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header/>
         <ProgressBar className="bg-orange-500 h-1">
+        <Header/>
         {children}
         </ProgressBar>
       </body>

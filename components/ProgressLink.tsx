@@ -18,7 +18,9 @@ import {
     useRef,
     useState,
 } from "react";
-
+interface ProgressBarLinkProps extends ComponentProps<typeof Link> {
+    activeClassName?: string;
+}
 const ProgressBarContext = createContext<ReturnType<typeof useProgress> | null>(
     null
 );
@@ -63,11 +65,15 @@ export function ProgressBarLink({
     href,
     children,
     className,
+    activeClassName = "text-orange-600",
     ...rest
-}: ComponentProps<typeof Link>) {
+}: ProgressBarLinkProps) {
     const progress = useProgressBar();
     const router = useRouter();
-    const path = usePathname()
+    const path = usePathname();
+    const currentPath =
+        typeof href === "string" ? href : href.pathname ?? href.toString();
+    const isActive = path === currentPath;
     return (
         <Link
             href={href}
@@ -79,9 +85,7 @@ export function ProgressBarLink({
                     progress.done();
                 });
             }}
-            className={cn(className, {
-                "text-black": path == href
-            })}
+            className={cn(className, isActive && activeClassName)}
             {...rest}
         >
             {children}

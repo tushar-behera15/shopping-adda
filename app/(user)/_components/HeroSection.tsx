@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import {
     Carousel,
@@ -5,8 +7,11 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
+    type CarouselApi,
 } from "@/components/ui/carousel";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import Autoplay from "embla-carousel-autoplay";
 
 const images = [
     {
@@ -27,20 +32,39 @@ const images = [
 ];
 
 export default function HeroSection() {
+    const [api, setApi] = useState<CarouselApi>();
+    const [current, setCurrent] = useState(0);
+
+    useEffect(() => {
+        if (!api) return;
+        setCurrent(api.selectedScrollSnap());
+        api.on("select", () => setCurrent(api.selectedScrollSnap()));
+    }, [api]);
+
     return (
         <div className="w-full px-2 sm:px-4 md:px-6 py-4 flex justify-center">
-            <Carousel className="w-full max-w-7xl rounded-xl overflow-hidden">
+            <Carousel
+                plugins={[
+                    Autoplay({
+                        delay: 4000,
+                        stopOnInteraction: false,
+                        stopOnMouseEnter: true,
+                    }),
+                ]}
+                setApi={setApi}
+                className="w-full max-w-7xl rounded-xl overflow-hidden"
+            >
                 <CarouselContent>
                     {images.map((img) => (
                         <CarouselItem key={img.id} className="w-full">
-                            <Card className=" shadow-none border-none relative h-[120px] sm:h-[160px] md:h-[220px] lg:h-[270px] xl:h-[300px]">
-                                <CardContent className="p-0 relative w-full h-full">
+                            <Card className="shadow-none border-none relative">
+                                <CardContent className="p-0 relative w-full h-[120px] sm:h-[160px] md:h-[220px] lg:h-[230px] xl:h-[250px]">
                                     <Image
                                         src={img.url}
                                         alt={img.alt}
                                         fill
-                                        className="object-contain rounded-xl bg-white"
-                                        sizes="(max-width: 768px) 100vw, 100vw"
+                                        className="object-cover rounded-xl"
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 80vw"
                                         priority
                                     />
                                 </CardContent>
@@ -48,8 +72,21 @@ export default function HeroSection() {
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="-left-3" />
-                <CarouselNext className="-right-3" />
+
+                <CarouselPrevious className="-left-3 sm:-left-4 md:-left-5" />
+                <CarouselNext className="-right-3 sm:-right-4 md:-right-5" />
+
+                {/* Dots/Indicators */}
+                <div className="flex justify-center gap-2 mt-2">
+                    {images.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => api?.scrollTo(index)}
+                            className={`h-2 w-2 rounded-full ${current === index ? "bg-gray-800" : "bg-gray-400"
+                                } transition-all`}
+                        />
+                    ))}
+                </div>
             </Carousel>
         </div>
     );

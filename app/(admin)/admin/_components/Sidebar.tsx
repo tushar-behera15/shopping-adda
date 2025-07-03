@@ -31,12 +31,12 @@ export default function Sidebar() {
         }`;
 
     return (
-        <div className="relative flex min-h-screen bg-gray-100">
+        <div className="relative flex min-h-screen">
             {/* Floating toggle button only shown when sidebar is closed */}
             {!sidebarOpen && (
                 <button
                     onClick={() => setSidebarOpen(true)}
-                    className="absolute top-4 left-4 z-40 text-gray-800 bg-white p-2 rounded-md shadow-md"
+                    className="absolute top-4 left-4 z-40 text-gray-800 bg-gray-100 p-2 rounded-md shadow-md"
                 >
                     <Menu size={22} />
                 </button>
@@ -44,7 +44,7 @@ export default function Sidebar() {
 
             {/* Sidebar */}
             <aside
-                className={`fixed top-0 left-0 h-full w-64 bg-white border-r p-6 space-y-4 z-30 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed top-0 left-0 h-full w-64 bg-gray-100 border-r p-6 space-y-4 z-30 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
             >
                 {/* Header row: Dashboard title + Menu icon (on the right) */}
