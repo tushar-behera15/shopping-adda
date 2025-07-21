@@ -21,7 +21,7 @@ export default function CategoryTable() {
     const fetchCategory = async () => {
         try {
             setLoading(true);
-            const res = await fetch('/api/all-category', {
+            const res = await fetch('/api/categories', {
                 method: 'GET',
             })
             const data = await res.json();
@@ -59,7 +59,7 @@ export default function CategoryTable() {
         e.preventDefault();
         try{
             setCreateLoading(true);
-            const res=await fetch('/api/all-category',{
+            const res=await fetch('/api/categories',{
                 method:'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body:JSON.stringify(form),
@@ -85,7 +85,7 @@ export default function CategoryTable() {
 
     const handleDelete=async(id:string)=>{
         try{
-            const res=await fetch(`/api/delete-category/${id}`,
+            const res=await fetch(`/api/categories/${id}`,
                 {
                     method:'DELETE'
                 }
@@ -111,8 +111,8 @@ export default function CategoryTable() {
         if(!selectedCategory) return;
         try{
             setUpdateLoading(true);
-            const res=await fetch('/api/update-category',{
-                method:'POST',
+            const res=await fetch('/api/categories',{
+                method:'PUT',
                 headers:{
                     "Content-Type": "application/json"
                 },

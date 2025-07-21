@@ -32,7 +32,7 @@ export default function ProductTable() {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const res = await fetch("/api/all-product", { method: "GET" });
+            const res = await fetch("/api/products", { method: "GET" });
             const data = await res.json();
             if (Array.isArray(data)) setProducts(data);
             else toast.error(data.error || "Failed to fetch products");
@@ -45,7 +45,7 @@ export default function ProductTable() {
 
     const fetchCategories = async () => {
         try {
-            const res = await fetch("/api/all-category", { method: "GET" });
+            const res = await fetch("/api/categories", { method: "GET" });
             const data = await res.json();
             if (Array.isArray(data)) setCategories(data);
         } catch (err) {
@@ -82,7 +82,7 @@ export default function ProductTable() {
         }
         try {
 
-            const res = await fetch('/api/all-product', {
+            const res = await fetch('/api/products', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -112,7 +112,7 @@ export default function ProductTable() {
 
     const handleDelete = async (id: string) => {
         try {
-            const res = await fetch(`/api/delete-product/${id}`, { method: 'DELETE' });
+            const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
             const data = await res.json();
             if (res.ok) {
                 toast.success("Product deleted successfully");
@@ -128,8 +128,8 @@ export default function ProductTable() {
         setUpdateLoading(true);
         if (!selectedProduct) return;
         try {
-            const res = await fetch(`/api/update-product`, {
-                method: 'POST',
+            const res = await fetch(`/api/products`, {
+                method: 'PUT',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: selectedProduct.id, ...form }),
             });

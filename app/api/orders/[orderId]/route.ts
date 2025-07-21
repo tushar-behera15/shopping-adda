@@ -2,10 +2,10 @@ import { createOrderitem } from "@/lib/create-orderItems";
 import { query } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
+export const GET = async (req: NextRequest, { params }: { params: Promise<{ orderId: string }> }) => {
     try {
         await createOrderitem();
-        const { id } = await params;
+        const { orderId } = await params;
         const result = await query(
             `
             SELECT 
@@ -28,7 +28,7 @@ export const GET = async (req: NextRequest, { params }: { params: Promise<{ id: 
             LEFT JOIN category c ON p.category_id = c.id
             WHERE oi.order_id = $1
             `,
-            [id]
+            [orderId]
         );
 
         return NextResponse.json(result.rows)

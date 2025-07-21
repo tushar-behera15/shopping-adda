@@ -18,7 +18,7 @@ export default function OrderTable() {
     const fetchOrder = async () => {
         try {
             setLoading(true);
-            const res = await fetch('/api/all-order');
+            const res = await fetch('/api/orders');
             const data = await res.json();
             if (Array.isArray(data)) setOrders(data);
             if (!res.ok) alert(data.error || 'Something went wrong');
@@ -31,7 +31,7 @@ export default function OrderTable() {
     // Fetch items for a selected order
     const fetchOrderItems = async (orderId: string) => {
         try {
-            const res = await fetch(`/api/all-orderItem/${orderId}`
+            const res = await fetch(`/api/orders/${orderId}`
             );
             const data = await res.json();
             if (res.ok) {
@@ -84,13 +84,20 @@ export default function OrderTable() {
                                         </td>
                                         <td className="px-6 py-3 space-x-2">
                                             <button
+
                                                 onClick={() => {
+                                                    setLoading(true);
+
                                                     setSelectedOrder(order);
                                                     fetchOrderItems(order.id);
+                                                    setLoading(false);
+
                                                 }}
-                                                className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg"
+                                                disabled={loading}
+                                                className={` text-white font-medium py-2 px-4 rounded-md items-center gap-2 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-500 hover:bg-gray-600'
+                                                    }`}
                                             >
-                                                View
+                                            {loading?"Viewing..":"View"}
                                             </button>
                                             <button
                                                 onClick={() => {
@@ -143,7 +150,7 @@ export default function OrderTable() {
                                 <p className="text-gray-500">Status</p>
                                 <span
                                     className={`inline-block px-3 py-1 rounded-full text-xs font-medium capitalize
-                                        ${selectedOrder?.status === 'pending'
+                                                ${selectedOrder?.status === 'pending'
                                             ? 'bg-yellow-100 text-yellow-800'
                                             : selectedOrder?.status === 'processing'
                                                 ? 'bg-blue-100 text-blue-800'
@@ -220,8 +227,8 @@ export default function OrderTable() {
 
                                 try {
                                     setUpdateLoading(true);
-                                    const res = await fetch(`/api/update-order`, {
-                                        method: 'POST',
+                                    const res = await fetch(`/api/orders`, {
+                                        method: 'PUT',
                                         headers: {
                                             'Content-Type': 'application/json',
                                         },

@@ -1,6 +1,6 @@
 import { createOrder } from "@/lib/create-order";
 import { query } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
     try {
@@ -21,11 +21,30 @@ export async function GET() {
             `
         );
 
+        
+
+
         return NextResponse.json(result.rows)
 
     }catch(err:any)
     {
         console.error(err);
         return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+}
+
+export async function PUT(req: NextRequest) {
+    try {
+        const { status, id } = await req.json();
+        const result = await query(
+            "UPDATE orders SET status = $1 WHERE id = $2 RETURNING *",
+            [status, id]
+        );
+        return NextResponse.json(result.rows[0]);
+    }
+    catch(err)
+    {
+        console.error("Error updating user:", err);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
     }
 }

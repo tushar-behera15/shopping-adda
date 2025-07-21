@@ -1,10 +1,16 @@
 'use client';
 
-import { ShoppingCart, Store, Menu, X } from "lucide-react";
+import { ShoppingCart, Store, Menu, X, UserCircle2, LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProgressBarLink } from "./ProgressLink";
+import Image from "next/image";
+import { toast } from "sonner";
 
+type User = {
+    name: string;
+    avatarUrl?: string;
+};
 export default function Header() {
     const navLinks = [
         { id: 1, href: "/", label: "Home" },
@@ -15,6 +21,41 @@ export default function Header() {
 
     const pathname = usePathname();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    const fetchUser = async () => {
+        try {
+            const res = await fetch('/api/profile');
+            const data = await res.json();
+            setUser(data.user);
+        } catch (err) {
+            console.error("Error fetching user profile:", err);
+        }
+    }
+
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
+
+    const handleLogout = async () => {
+        try {
+            setLoading(true);
+            const res = await fetch("/api/auth/logout", { method: "POST" });
+            if(res.ok){
+                toast.success("Logout sucessfully");
+                setUser(null);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchUser();
+    }, []);
 
     return (
         <header className="w-full border-b-2 border-gray-200">
@@ -43,12 +84,40 @@ export default function Header() {
 
                 {/* Right Side */}
                 <div className="hidden md:flex space-x-4 items-center">
-                    <ProgressBarLink
-                        href="#"
-                        className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition"
-                    >
-                        Sign-in
-                    </ProgressBarLink>
+                    {user ? (
+                        <>
+                            <div className="flex items-center space-x-2">
+                                {user.avatarUrl ? (
+                                    <Image
+                                        src={user.avatarUrl}
+                                        alt="User"
+                                        className="w-8 h-8 rounded-full"
+                                        width={50}
+                                        height={50}
+                                    />
+                                ) : (
+                                    <UserCircle2 className="w-6 h-6 text-gray-600" />
+                                )}
+                                <span className="font-medium text-gray-700">{user.name}</span>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                disabled={loading}
+                                className="p-2 border rounded text-sm hover:bg-gray-100"
+                                title="Logout"
+                            >
+                                <LogOut className="w-5 h-5" />
+                            </button>
+                        </>
+                    ) : (
+                        <ProgressBarLink
+                            href="/sign-in"
+                            className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition"
+                        >
+                            Sign-in
+                        </ProgressBarLink>
+                    )}
+
                     <button title="My-cart" className="p-2 border rounded">
                         <ShoppingCart className="w-5 h-5" />
                     </button>
@@ -101,13 +170,27 @@ export default function Header() {
                             </ProgressBarLink>
                         );
                     })}
-
-                    <ProgressBarLink
-                        href="#"
-                        className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition text-center"
-                    >
-                        Sign-in
-                    </ProgressBarLink>
+                    {user ? (
+                        <div className="flex items-center space-x-2 mt-4">
+                            {user.avatarUrl ? (
+                                <Image
+                                    src={user.avatarUrl}
+                                    alt="User"
+                                    className="w-8 h-8 rounded-full"
+                                />
+                            ) : (
+                                <UserCircle2 className="w-6 h-6 text-gray-600" />
+                            )}
+                            <span className="text-sm font-medium text-gray-700">{user.name}</span>
+                        </div>
+                    ) : (
+                        <ProgressBarLink
+                            href="/sign-in"
+                            className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition text-center"
+                        >
+                            Sign-in
+                        </ProgressBarLink>
+                    )}
 
                     <div className="flex space-x-4">
                         <button title="My-cart" className="p-2 border rounded w-full">

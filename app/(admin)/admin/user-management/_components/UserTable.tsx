@@ -19,14 +19,14 @@ export default function UserTable() {
             name: "",
             email: "",
             password: "",
-            role: "user"
+            role: ""
         }
     );
 
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            const res = await fetch("/api/all-users", {
+            const res = await fetch("/api/users", {
                 method: "GET"
             })
             const data = await res.json();
@@ -67,7 +67,7 @@ export default function UserTable() {
         e.preventDefault();
         try {
             setCreateLoading(true);
-            const res = await fetch('/api/all-users', {
+            const res = await fetch('/api/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(form),
@@ -98,7 +98,7 @@ export default function UserTable() {
 
     const handleDelete = async (id: string) => {
         try {
-            const res = await fetch(`/api/delete-user/${id}`, {
+            const res = await fetch(`/api/users/${id}`, {
                 method: 'DELETE'
             })
 
@@ -123,8 +123,8 @@ export default function UserTable() {
         if (!selectedUser) return;
         setUpdateLoading(true);
         try {
-            const res = await fetch(`/api/update-user/`, {
-                method: 'POST',
+            const res = await fetch(`/api/users`, {
+                method: 'PUT',
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -265,8 +265,8 @@ export default function UserTable() {
                                     value={form.role}
                                     onChange={handleChange}
                                 >
-                                    <option value="User" defaultChecked>User</option>
-                                    <option value="Admin">Admin</option>
+                                    <option value="user" defaultChecked>User</option>
+                                    <option value="admin">Admin</option>
                                 </select>
                             </div>
                             <div className="pt-2">
@@ -325,8 +325,8 @@ export default function UserTable() {
                                     value={form.role}
                                     onChange={handleChange}
                                 >
-                                    <option value="User" defaultChecked>User</option>
-                                    <option value="Admin">Admin</option>
+                                    <option value="user" defaultChecked>User</option>
+                                    <option value="admin">Admin</option>
                                 </select>
                             </div>
                             <div className="pt-2">

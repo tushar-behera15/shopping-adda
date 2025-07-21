@@ -49,7 +49,7 @@ export default function Sidebar() {
             >
                 {/* Header row: Dashboard title + Menu icon (on the right) */}
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold">Dashboard</h2>
+                    <ProgressBarLink href='/' className="text-xl font-bold">Dashboard</ProgressBarLink>
                     <button
                         onClick={() => setSidebarOpen(false)}
                         className="text-gray-700 focus:outline-none"
