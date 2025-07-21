@@ -43,7 +43,7 @@ export default function Header() {
         try {
             setLoading(true);
             const res = await fetch("/api/auth/logout", { method: "POST" });
-            if(res.ok){
+            if (res.ok) {
                 toast.success("Logout sucessfully");
                 setUser(null);
             }
@@ -171,18 +171,28 @@ export default function Header() {
                         );
                     })}
                     {user ? (
-                        <div className="flex items-center space-x-2 mt-4">
-                            {user.avatarUrl ? (
-                                <Image
-                                    src={user.avatarUrl}
-                                    alt="User"
-                                    className="w-8 h-8 rounded-full"
-                                />
-                            ) : (
-                                <UserCircle2 className="w-6 h-6 text-gray-600" />
-                            )}
-                            <span className="text-sm font-medium text-gray-700">{user.name}</span>
-                        </div>
+                        <>
+                            <div className="flex items-center space-x-2 mt-4">
+                                {user.avatarUrl ? (
+                                    <Image
+                                        src={user.avatarUrl}
+                                        alt="User"
+                                        className="w-8 h-8 rounded-full"
+                                    />
+                                ) : (
+                                    <UserCircle2 className="w-6 h-6 text-gray-600" />
+                                )}
+                                <span className="text-sm font-medium text-gray-700">{user.name}</span>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                disabled={loading}
+                                className="p-2 border rounded text-sm hover:bg-gray-100"
+                                title="Logout"
+                            >
+                                <LogOut className="w-5 h-5" />
+                            </button>
+                        </>
                     ) : (
                         <ProgressBarLink
                             href="/sign-in"
