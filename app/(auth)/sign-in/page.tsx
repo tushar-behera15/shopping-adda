@@ -104,7 +104,7 @@ export default function SignInPage() {
                     </div>
                     <div>
                         <p className="text-sm text-gray-600">
-                            Don't have an account? <ProgressBarLink href="/sign-up" className="text-orange-600 hover:underline">Register</ProgressBarLink>
+                            Don&apos;t have an account? <ProgressBarLink href="/sign-up" className="text-orange-600 hover:underline">Register</ProgressBarLink>
                         </p>
                     </div>
 
