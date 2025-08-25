@@ -38,7 +38,6 @@ export default function Header() {
         fetchUser();
     }, []);
 
-
     const handleLogout = async () => {
         try {
             setLoading(true);
@@ -53,10 +52,6 @@ export default function Header() {
         setLoading(false);
     };
 
-    useEffect(() => {
-        fetchUser();
-    }, []);
-
     return (
         <header className="w-full border-b-2 border-gray-200">
             <div className="flex justify-between items-center p-4">
@@ -66,7 +61,7 @@ export default function Header() {
                 </ProgressBarLink>
 
                 {/* Desktop Nav */}
-                <nav className="hidden md:flex space-x-6 text-sm md:text-base font-medium">
+                <nav className="hidden lg:flex space-x-6 text-sm md:text-base font-medium">
                     {navLinks.map((link) => {
                         const isActive = pathname === link.href;
                         return (
@@ -83,32 +78,37 @@ export default function Header() {
                 </nav>
 
                 {/* Right Side */}
-                <div className="hidden md:flex space-x-4 items-center">
+                <div className="hidden lg:flex items-center space-x-6">
                     {user ? (
-                        <>
+                        <div className="flex items-center space-x-3">
+                            {/* Avatar + Name */}
                             <div className="flex items-center space-x-2">
                                 {user.avatarUrl ? (
                                     <Image
                                         src={user.avatarUrl}
                                         alt="User"
                                         className="w-8 h-8 rounded-full"
-                                        width={50}
-                                        height={50}
+                                        width={32}
+                                        height={32}
                                     />
                                 ) : (
-                                    <UserCircle2 className="w-6 h-6 text-gray-600" />
+                                    <UserCircle2 className="w-7 h-7 text-gray-600" />
                                 )}
-                                <span className="font-medium text-gray-700">{user.name}</span>
+                                <span className="lg:inline font-medium text-gray-700 truncate max-w-[120px]">
+                                    {user.name}
+                                </span>
                             </div>
+
+                            {/* Logout */}
                             <button
                                 onClick={handleLogout}
                                 disabled={loading}
-                                className="p-2 border rounded text-sm hover:bg-gray-100"
-                                title="Logout"
+                                className="flex items-center justify-center w-9 h-9 rounded-full border bg-white shadow hover:bg-gray-100 active:scale-95 transition"
+                                aria-label="Logout"
                             >
-                                <LogOut className="w-5 h-5" />
+                                <LogOut className="w-5 h-5 text-gray-700" />
                             </button>
-                        </>
+                        </div>
                     ) : (
                         <ProgressBarLink
                             href="/sign-in"
@@ -118,17 +118,20 @@ export default function Header() {
                         </ProgressBarLink>
                     )}
 
-                    <button title="My-cart" className="p-2 border rounded">
-                        <ShoppingCart className="w-5 h-5" />
-                    </button>
-                    <button title="My-orders" className="p-2 border rounded">
-                        <Store className="w-5 h-5" />
-                    </button>
+                    {/* Cart + Orders */}
+                    <div className="flex items-center space-x-3">
+                        <button title="My-cart" className="p-2 border rounded hover:bg-gray-50 transition">
+                            <ShoppingCart className="w-5 h-5" />
+                        </button>
+                        <button title="My-orders" className="p-2 border rounded hover:bg-gray-50 transition">
+                            <Store className="w-5 h-5" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Mobile Menu Toggle */}
                 <button
-                    className="md:hidden"
+                    className="lg:hidden"
                     onClick={() => setMenuOpen(true)}
                 >
                     <Menu className="w-6 h-6" />
@@ -138,14 +141,14 @@ export default function Header() {
             {/* Mobile Drawer Overlay */}
             {menuOpen && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
+                    className="fixed inset-0 bg-black bg-opacity-40 z-40 lg:hidden"
                     onClick={() => setMenuOpen(false)}
                 />
             )}
 
             {/* Mobile Drawer Menu (slides in from right) */}
             <div
-                className={`fixed top-0 right-0 w-64 h-full bg-white z-50 shadow-lg transform transition-transform duration-300 ease-in-out md:hidden
+                className={`fixed top-0 right-0 w-64 h-full bg-white z-50 shadow-lg transform transition-transform duration-300 ease-in-out lg:hidden
           ${menuOpen ? "translate-x-0" : "translate-x-full"}`}
             >
                 <div className="flex justify-between items-center p-4 border-b">
@@ -172,26 +175,54 @@ export default function Header() {
                     })}
                     {user ? (
                         <>
-                            <div className="flex items-center space-x-2 mt-4">
-                                {user.avatarUrl ? (
-                                    <Image
-                                        src={user.avatarUrl}
-                                        alt="User"
-                                        className="w-8 h-8 rounded-full"
-                                    />
-                                ) : (
-                                    <UserCircle2 className="w-6 h-6 text-gray-600" />
-                                )}
-                                <span className="text-sm font-medium text-gray-700">{user.name}</span>
+                            {/* User Info Row */}
+                            <div className="flex items-center justify-between mt-4 px-2">
+                                <div className="flex items-center space-x-2">
+                                    {user.avatarUrl ? (
+                                        <Image
+                                            src={user.avatarUrl}
+                                            alt="User"
+                                            className="w-8 h-8 rounded-full"
+                                            width={32}
+                                            height={32}
+                                        />
+                                    ) : (
+                                        <UserCircle2 className="w-8 h-8 text-gray-600" />
+                                    )}
+                                    <span className="text-lg font-medium text-gray-700">{user.name}</span>
+                                </div>
+
+                                {/* Logout button */}
+                                <button
+                                    onClick={handleLogout}
+                                    disabled={loading}
+                                    className="flex items-center justify-center w-10 h-10 rounded-full border bg-white shadow hover:bg-gray-100 active:scale-95 transition"
+                                    aria-label="Logout"
+                                >
+                                    <LogOut className="w-5 h-5 text-gray-700" />
+                                </button>
                             </div>
-                            <button
-                                onClick={handleLogout}
-                                disabled={loading}
-                                className="p-2 border rounded text-sm hover:bg-gray-100"
-                                title="Logout"
-                            >
-                                <LogOut className="w-5 h-5" />
-                            </button>
+
+                            {/* Divider */}
+                            <hr className="my-4 border-gray-200" />
+
+                            {/* Cart + Orders */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    title="My-cart"
+                                    className="flex flex-col items-center justify-center border rounded-lg py-3 hover:bg-gray-50 transition"
+                                >
+                                    <ShoppingCart className="w-6 h-6 mb-1" />
+                                    <span className="text-xs font-medium">Cart</span>
+                                </button>
+                                <button
+                                    title="My-orders"
+                                    className="flex flex-col items-center justify-center border rounded-lg py-3 hover:bg-gray-50 transition"
+                                >
+                                    <Store className="w-6 h-6 mb-1" />
+                                    <span className="text-xs font-medium">Orders</span>
+                                </button>
+                            </div>
                         </>
                     ) : (
                         <ProgressBarLink
@@ -201,15 +232,6 @@ export default function Header() {
                             Sign-in
                         </ProgressBarLink>
                     )}
-
-                    <div className="flex space-x-4">
-                        <button title="My-cart" className="p-2 border rounded w-full">
-                            <ShoppingCart className="mx-auto w-5 h-5" />
-                        </button>
-                        <button title="My-orders" className="p-2 border rounded w-full">
-                            <Store className="mx-auto w-5 h-5" />
-                        </button>
-                    </div>
                 </div>
             </div>
         </header>

@@ -1,5 +1,6 @@
 'use client';
 
+import { ProgressBarLink } from '@/components/ProgressLink';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -48,7 +49,7 @@ export default function SignInPage() {
                 router.push('/');
             }
 
-            
+
         }
         catch (err) {
             console.error(err);
@@ -100,6 +101,11 @@ export default function SignInPage() {
                             placeholder='Enter your password..'
                             className="mt-1 block w-full h-10 px-4 py-2 rounded-md border shadow-sm"
                         />
+                    </div>
+                    <div>
+                        <p className="text-sm text-gray-600">
+                            Don't have an account? <ProgressBarLink href="/sign-up" className="text-orange-600 hover:underline">Register</ProgressBarLink>
+                        </p>
                     </div>
 
                     <button
