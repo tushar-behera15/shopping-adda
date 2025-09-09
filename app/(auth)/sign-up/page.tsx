@@ -51,7 +51,7 @@ export default function RegisterPage() {
                 if (user?.role === 'admin') {
                     router.push('/admin/dashboard');
                 } else {
-                    router.push('/');
+                    router.push('/verify-otp');
                 }
             } else {
                 toast.error(data.error || "Registration Failed");

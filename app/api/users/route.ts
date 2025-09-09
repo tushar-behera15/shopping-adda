@@ -4,11 +4,12 @@ import bcrypt from "bcrypt";
 import { createUser } from "@/lib/create-user";
 export async function POST(req: Request) {
     try {
-        const { name, email, password, role } = await req.json();
-        const hashedPassword= await bcrypt.hash(password,10);
+        const { name, email, password, role, otp } = await req.json();
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedotp = await bcrypt.hash(otp, 10);
         const result = await query(
-            "INSERT INTO users(name,email,password,role) VALUES ($1,$2,$3,$4) RETURNING *",
-            [name, email, hashedPassword, role]
+            "INSERT INTO users(name,email,password,role,otp) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+            [name, email, hashedPassword, role, hashedotp]
         );
         return NextResponse.json({ users: result.rows[0] }, { status: 201 });
     }
@@ -48,10 +49,10 @@ export async function PUT(req: NextRequest) {
     }
 }
 
-export const DELETE = async (req: Request, { params }:{params:Promise<{id:string}>}) => {
+export const DELETE = async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
     try {
-        const result=await query(
+        const result = await query(
             `DELETE FROM users WHERE id = $1`,
             [id]
         )

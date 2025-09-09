@@ -17,6 +17,9 @@ export async function createUser() {
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         role user_role NOT NULL DEFAULT 'user',
+        otp TEXT DEFAULT NULL,
+        otp_expires_at TIMESTAMPTZ,
+        is_verified BOOLEAN DEFAULT false,
         created_at TIMESTAMPTZ DEFAULT now()
 )`
     await query(sql);
