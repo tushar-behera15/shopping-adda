@@ -44,7 +44,7 @@ export default function RegisterPage() {
 
             const data = await res.json();
             if (res.ok) {
-                toast.success("Registered Successfully");
+                toast.success("Otp send to your email");
                 // Fetch user profile after registration
                 const userRes = await fetch('/api/profile');
                 const { user } = await userRes.json();

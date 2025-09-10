@@ -1,11 +1,13 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function VerifyOtpPage() {
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
+  const router= useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +19,8 @@ export default function VerifyOtpPage() {
 
     const data = await res.json();
     if (res.ok) {
-      toast.success("User verified successfully!");
+      toast.success("User register successfully!");
+      router.push("/")
     } else {
       toast.error(data.error || "OTP verification failed");
     }
